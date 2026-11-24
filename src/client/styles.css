@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--ui-background);
+  --color-foreground: var(--ui-foreground);
+  --color-card: var(--ui-card);
+  --color-card-foreground: var(--ui-card-foreground);
+  --color-popover: var(--ui-popover);
+  --color-popover-foreground: var(--ui-popover-foreground);
+  --color-primary: var(--primary, #6f4328);
+  --color-primary-foreground: var(--primary-foreground, #fff8e8);
+  --color-secondary: var(--ui-secondary);
+  --color-secondary-foreground: var(--ui-secondary-foreground);
+  --color-muted: var(--ui-muted);
+  --color-muted-foreground: var(--ui-muted-foreground);
+  --color-accent: var(--accent, #c98c4d);
+  --color-accent-foreground: var(--ui-accent-foreground);
+  --color-destructive: var(--ui-destructive);
+  --color-destructive-foreground: var(--ui-destructive-foreground);
+  --color-border: var(--ui-border);
+  --color-input: var(--ui-input);
+  --color-ring: var(--ui-ring);
+  --radius-sm: calc(var(--radius, 0.75rem) - 4px);
+  --radius-md: calc(var(--radius, 0.75rem) - 2px);
+  --radius-lg: var(--radius, 0.75rem);
+  --radius-xl: calc(var(--radius, 0.75rem) + 4px);
+}
+
+:root {
+  --ui-background: #f5efe3;
+  --ui-foreground: #2e1e15;
+  --ui-card: #fffcf5;
+  --ui-card-foreground: #2e1e15;
+  --ui-popover: #fffdf8;
+  --ui-popover-foreground: #2e1e15;
+  --ui-secondary: #ede4d3;
+  --ui-secondary-foreground: #3b281d;
+  --ui-muted: #ebe2d2;
+  --ui-muted-foreground: #66574b;
+  --ui-accent-foreground: #26170e;
+  --ui-destructive: #b43c2c;
+  --ui-destructive-foreground: #fff8f5;
+  --ui-border: #ddd2bf;
+  --ui-input: #cfc1ab;
+  --ui-ring: #8a5634;
+}
+
+.espresso-surface {
+  --ui-background: #1b110b;
+  --ui-foreground: #fbf2e3;
+  --ui-card: rgba(255, 248, 235, 0.06);
+  --ui-card-foreground: #fbf2e3;
+  --ui-popover: #26180f;
+  --ui-popover-foreground: #fbf2e3;
+  --ui-secondary: rgba(255, 245, 228, 0.09);
+  --ui-secondary-foreground: #f6e7cf;
+  --ui-muted: rgba(255, 245, 228, 0.08);
+  --ui-muted-foreground: #cfb89d;
+  --ui-accent-foreground: #24140b;
+  --ui-destructive: #e06b59;
+  --ui-destructive-foreground: #fff7f5;
+  --ui-border: rgba(236, 200, 152, 0.2);
+  --ui-input: rgba(236, 200, 152, 0.24);
+  --ui-ring: #e6bd8a;
+}

@@ -54,10 +54,9 @@ export function MenuToolbar({ data }: MenuToolbarProps) {
     return [...map.entries()].map(([name, count]) => ({ name, count }));
   }, [data.products]);
 
-  const isFlexibleStorefront = data.cafe || data.products.length !== 8;
-  const showTabs = isFlexibleStorefront && data.settings?.showCategoryTabs !== false && categories.length >= 2;
-  const showSearch = isFlexibleStorefront && data.settings?.showSearch !== false;
-  const showFavFilter = isFlexibleStorefront && data.settings?.showFavorites !== false;
+  const showTabs = data.settings?.showCategoryTabs !== false && categories.length >= 2;
+  const showSearch = data.settings?.showSearch !== false && data.products.length > 0;
+  const showFavFilter = data.settings?.showFavorites !== false && data.products.length > 0;
   const showTableNotice = Boolean(data.cafe && data.tableToken);
 
   const formatNum = React.useCallback(
@@ -118,7 +117,7 @@ export function MenuToolbar({ data }: MenuToolbarProps) {
 
   return (
     <div
-      className="menu-toolbar mb-5 flex w-full flex-col gap-3"
+      className="menu-toolbar mb-5 flex w-full min-w-0 max-w-full flex-col gap-3"
       dir={isFa ? 'rtl' : 'ltr'}
     >
       {(showSearch || showFavFilter || showTableNotice) && (
@@ -195,13 +194,13 @@ export function MenuToolbar({ data }: MenuToolbarProps) {
           value={activeCategory}
           onValueChange={setActiveCategory}
           dir={isFa ? 'rtl' : 'ltr'}
-          className="w-full"
+          className="w-full min-w-0 max-w-full"
         >
-          <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <TabsList className="inline-flex h-auto min-h-10 w-max justify-start gap-1 rounded-xl border border-border/80 bg-[#ebe2d1]/80 p-1">
+          <div className="w-full min-w-0 max-w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <TabsList className="inline-flex h-auto min-h-10 w-max justify-start gap-1 rounded-lg border border-border/80 bg-[#ebe2d1]/90 p-1">
               <TabsTrigger
                 value={ALL_CATEGORY}
-                className="flex-none rounded-lg px-3.5 py-1.5 text-xs font-semibold text-muted-foreground data-[state=active]:bg-[#fffdf7] data-[state=active]:text-foreground data-[state=active]:shadow-xs"
+                className="flex-none rounded-md px-3 py-1.5 text-xs font-semibold text-muted-foreground data-[state=active]:bg-[#fffdf7] data-[state=active]:text-foreground data-[state=active]:shadow-xs"
               >
                 <span>{isFa ? 'همه' : 'All'}</span>
                 <span className="text-[11px] opacity-70 tabular-nums">
@@ -212,7 +211,7 @@ export function MenuToolbar({ data }: MenuToolbarProps) {
                 <TabsTrigger
                   key={cat.name}
                   value={cat.name}
-                  className="flex-none rounded-lg px-3.5 py-1.5 text-xs font-semibold text-muted-foreground data-[state=active]:bg-[#fffdf7] data-[state=active]:text-foreground data-[state=active]:shadow-xs"
+                  className="flex-none rounded-md px-3 py-1.5 text-xs font-semibold text-muted-foreground data-[state=active]:bg-[#fffdf7] data-[state=active]:text-foreground data-[state=active]:shadow-xs"
                 >
                   <span>{cat.name}</span>
                   <span className="text-[11px] opacity-70 tabular-nums">

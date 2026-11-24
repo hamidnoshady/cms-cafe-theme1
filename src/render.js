@@ -75,7 +75,7 @@ export async function renderHome(ctx, page) {
   const description = localizeDefaultSetting('brandDescription', settings.brandDescription, locale) || heroText;
   const slogan = String(localizeDefaultSetting('slogan', settings.slogan, locale) || '').split('\n').slice(0, 4);
   const menuTitle = grid?.heading || localizeDefaultSetting('menuTitle', settings.menuTitle, locale);
-  const flexible = views.length !== 8 || ctx.cafe;
+  const flexible = true;
   const cards = views.map((p, index) => renderCard(p, index, ctx, showBuyButton)).join('');
   const home = `<div class="site-frame">${ctx.demoBanner}${ctx.navigationHtml}
     <main class="poster${flexible ? ' poster--flexible' : ''}${ctx.cafe ? ' poster--cafe' : ''}" aria-label="${e(brandName)}" data-menu-count="${views.length}">

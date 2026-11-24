@@ -12,6 +12,20 @@ interface MenuToolbarProps {
 
 const ALL_CATEGORY = '__all__';
 
+function normalizeSearch(value: string): string {
+  return value
+    .replace(/[\u064A\u0649]/g, '\u06CC')
+    .replace(/\u0643/g, '\u06A9')
+    .replace(/\u0629/g, '\u0647')
+    .replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627')
+    .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+    .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06F0))
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[\u200C\u200D\s]+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
 function readFavouriteIds(siteKey: string): Set<string> {
   try {
     const raw = JSON.parse(localStorage.getItem(`coffee-poster:favourites:${siteKey}`) || '[]');
@@ -54,7 +68,7 @@ export function MenuToolbar({ data }: MenuToolbarProps) {
   const applyFilter = React.useCallback(() => {
     const favs = readFavouriteIds(data.siteKey);
     setFavCount(favs.size);
-    const normalizedQuery = query.trim().toLowerCase();
+    const normalizedQuery = normalizeSearch(query);
     const cells = document.querySelectorAll<HTMLElement>('.poster .menu-grid > .cell');
     let shown = 0;
 
@@ -68,9 +82,9 @@ export function MenuToolbar({ data }: MenuToolbarProps) {
       const matchesFav = !onlyFavs || favs.has(product.id);
       const matchesQuery =
         !normalizedQuery ||
-        product.title.toLowerCase().includes(normalizedQuery) ||
-        (product.summary || '').toLowerCase().includes(normalizedQuery) ||
-        (product.category || '').toLowerCase().includes(normalizedQuery);
+        normalizeSearch(product.title).includes(normalizedQuery) ||
+        normalizeSearch(product.summary || '').includes(normalizedQuery) ||
+        normalizeSearch(product.category || '').includes(normalizedQuery);
 
       const visible = matchesCategory && matchesFav && matchesQuery;
       cell.hidden = !visible;
@@ -183,7 +197,7 @@ export function MenuToolbar({ data }: MenuToolbarProps) {
           dir={isFa ? 'rtl' : 'ltr'}
           className="w-full"
         >
-          <div className="-mx-1 overflow-x-auto px-1 pb-1">
+          <div className="-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <TabsList className="inline-flex h-auto min-h-10 w-max justify-start gap-1 rounded-xl border border-border/80 bg-[#ebe2d1]/80 p-1">
               <TabsTrigger
                 value={ALL_CATEGORY}

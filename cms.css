@@ -4,23 +4,23 @@
 @font-face {
   font-family: Vazirmatn;
   src: url('/public/fonts/vazirmatn-arabic-400-normal.woff') format('woff');
-  font-weight: 400;
+  font-weight: 100 500;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F, U+202A-202E;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F, U+202A-202E, U+2066-2069;
 }
 @font-face {
   font-family: Vazirmatn;
   src: url('/public/fonts/vazirmatn-arabic-700-normal.woff') format('woff');
-  font-weight: 700;
+  font-weight: 600 900;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F, U+202A-202E;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F, U+202A-202E, U+2066-2069;
 }
 @font-face {
   font-family: Vazirmatn;
   src: url('/public/fonts/vazirmatn-latin-400-normal.woff') format('woff');
-  font-weight: 400;
+  font-weight: 100 500;
   font-style: normal;
   font-display: swap;
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02B0-02FF, U+2000-206F, U+2070-209F, U+2100-21FF, U+2212;
@@ -28,7 +28,7 @@
 @font-face {
   font-family: Vazirmatn;
   src: url('/public/fonts/vazirmatn-latin-700-normal.woff') format('woff');
-  font-weight: 700;
+  font-weight: 600 900;
   font-style: normal;
   font-display: swap;
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02B0-02FF, U+2000-206F, U+2070-209F, U+2100-21FF, U+2212;
@@ -105,9 +105,12 @@ body.has-dialog { overflow: hidden; }
 .site-nav a { text-decoration: none; transition: color .18s ease; }
 .site-nav a:hover { color: var(--primary); }
 .site-nav__tools { display: flex; align-items: center; gap: 1rem; margin-inline-start: auto; }
-.site-nav__tools form { display: flex; align-items: center; border-bottom: 1px solid #b9ab98; }
+.site-nav__tools form { display: flex; align-items: center; gap: .25rem; border-bottom: 1px solid #b9ab98; }
 .site-nav__tools input { width: 9.5rem; border: 0; padding: .35rem; background: transparent; color: var(--ink); font-size: .8rem; }
-.site-nav__tools button { border: 0; background: none; font-size: 1.25rem; color: var(--ink); padding: .15rem .35rem; }
+.site-nav__tools button { display: inline-flex; align-items: center; justify-content: center; border: 0; background: none; color: var(--muted); padding: .3rem; transition: color .18s ease; }
+.site-nav__tools button:hover { color: var(--primary); }
+.site-nav__search-icon { display: block; width: 1rem; height: 1rem; }
+.menu-toolbar input[type='search']::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
 
 .site-footer {
   width: min(100% - 2rem, 78rem);
@@ -158,27 +161,52 @@ body.has-dialog { overflow: hidden; }
 .brand__desc { white-space: pre-line; overflow-wrap: anywhere; }
 .brand__slogan span { max-width: none; white-space: nowrap; overflow-wrap: normal; }
 
+/* Zero letter-spacing across all RTL Persian text so cursive ligatures never split or pinch. */
+html[dir='rtl'] :is(
+  .brand__name, .brand__name span, .brand__name .brand__name-second,
+  .brand__tag, .brand__desc, .brand__slogan, .brand__slogan span,
+  .menu h1, .item h2, .item p, .price,
+  .item:is(:hover, :focus-visible, .is-hovered, .is-pressed) h2,
+  .item:is(:hover, :focus-visible, .is-hovered, .is-pressed) .price,
+  .detail__brand, .detail__kicker, .detail__name, .detail__eyebrow,
+  .detail__notes li, .detail__stat-label, .detail__stat-value,
+  .detail__price-amount, .detail__price-note, .detail__cta,
+  .demo-banner, .checkout__eyebrow, .eyebrow, .poster--flexible .item__cat
+) {
+  letter-spacing: 0;
+}
 html[dir='rtl'] .brand__slogan span { max-width: 29cqw; white-space: normal; overflow-wrap: anywhere; }
 html[dir='rtl'] .brand { border-left: 0; border-right: .25cqw solid #e6dece; }
 html[dir='rtl'] .brand__head { left: auto; right: 5cqw; }
 html[dir='rtl'] .brand__foot { left: 2.5cqw; right: 68cqw; }
-html[dir='rtl'] .brand__desc { padding-left: 0; padding-right: 2.2cqw; border-left: 0; border-right: .25cqw solid #726657; }
-html[dir='rtl'] .brand__name span, html[dir='rtl'] .brand__tag, html[dir='rtl'] .brand__slogan span { transform-origin: right center; }
+html[dir='rtl'] .brand__desc { padding-left: 0; padding-right: 2.2cqw; border-left: 0; border-right: .25cqw solid #726657; line-height: 1.65; }
+html[dir='rtl'] .brand__name { line-height: 1.25; }
+html[dir='rtl'] .brand__tag { line-height: 1.45; }
+html[dir='rtl'] .brand__name span,
+html[dir='rtl'] .brand__tag,
+html[dir='rtl'] .brand__slogan span { transform: none; transform-origin: right center; }
+html[dir='rtl'] .poster:not(.poster--flexible) .slogan-large { font-size: 4.5cqw; line-height: 1.3; transform: none; }
+html[dir='rtl'] .poster:not(.poster--flexible) .slogan-small { font-size: 3.3cqw; line-height: 1.38; transform: none; }
 html[dir='rtl'] .menu::before { inset: 0 0 0 auto; }
-html[dir='rtl'] .menu h1 { margin-inline: 0 5cqw; letter-spacing: 0; }
-html[dir='rtl'] .item h2, html[dir='rtl'] .brand__name, html[dir='rtl'] .brand__tag, html[dir='rtl'] .brand__slogan { letter-spacing: 0; }
-html[dir='rtl'] .item h2::after { margin-left: 0; margin-right: .35em; content: '↖'; }
+html[dir='rtl'] .menu h1 { margin-inline: 0 5cqw; }
+html[dir='rtl'] .item h2::after { margin-left: 0; margin-right: .35em; content: '↖'; transform: translate(.35em, .25em); }
+html[dir='rtl'] .item:is(:hover, :focus-visible, .is-hovered, .is-pressed) h2::after { transform: translate(0, 0); }
+html[dir='rtl'] .poster:not(.poster--flexible) .item__action--fav { left: auto; inset-inline-start: .15cqw; }
+html[dir='rtl'] .poster:not(.poster--flexible) .item__action--cart { right: auto; inset-inline-end: .15cqw; }
 html[dir='rtl'] .brand__logo { object-position: right center; }
-html[dir='rtl'] .hero-cup { left: auto; right: -21.75cqw; }
-html[dir='rtl'] .detail__art { box-shadow: inset -1px 0 0 rgb(255 242 222 / 10%); }
-html[dir='rtl'] .detail__brand,
-html[dir='rtl'] .detail__kicker,
-html[dir='rtl'] .detail__eyebrow,
-html[dir='rtl'] .detail__price-note,
-html[dir='rtl'] .detail__stat-label,
-html[dir='rtl'] .detail__notes li {
-  letter-spacing: 0;
+html[dir='rtl'] .poster:not(.poster--flexible) .hero-cup { left: auto; right: -21.75cqw; transform: scaleX(-1); }
+html[dir='rtl'] .detail__glass {
+  background:
+    radial-gradient(90% 70% at 22% 18%, rgb(208 145 84 / 24%), transparent 62%),
+    radial-gradient(80% 80% at 94% 98%, rgb(11 6 3 / 55%), transparent 70%),
+    radial-gradient(60% 60% at 50% 52%, rgb(120 74 40 / 14%), transparent 72%),
+    linear-gradient(202deg, #2f1e13 0%, #23150d 46%, #150d08 100%);
 }
+html[dir='rtl'] .detail__kicker::after {
+  background: linear-gradient(270deg, rgb(230 189 138 / 42%), transparent);
+}
+html[dir='rtl'] .detail__art { box-shadow: inset -1px 0 0 rgb(255 242 222 / 10%); }
+html[dir='rtl'] .detail__name { line-height: 1.2; }
 html[dir='rtl'] .detail__cta { margin-left: 0; margin-inline-start: auto; }
 html[dir='rtl'] .detail__cta svg { transform: scaleX(-1); }
 html[dir='rtl'] .detail__cta:hover svg { transform: scaleX(-1) translateX(.22em); }
@@ -251,7 +279,6 @@ html[dir='rtl'] .poster--flexible .brand__name {
   letter-spacing: inherit;
 }
 .poster--flexible .brand__name .brand__name-second {
-  margin-inline-start: .28em;
   letter-spacing: inherit;
 }
 .poster--flexible .brand__name--logo {
@@ -1179,6 +1206,7 @@ html[dir='rtl'] .eyebrow { letter-spacing: 0; }
 .receipt-row { display: flex; justify-content: space-between; gap: 1.5rem; padding-block: .65rem; border-block-end: 1px solid #e6dece; font-size: .88rem; }
 .receipt-row dt { color: var(--muted); }
 .receipt-row dd { margin: 0; text-align: end; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.receipt-row dd.receipt-ltr { unicode-bidi: isolate; text-align: left; }
 .receipt-line { display: flex; justify-content: space-between; gap: 1rem; padding-block: 1rem; border-block-end: 1px solid #d8cdbb; font-size: .92rem; }
 .receipt-line small { display: block; margin-block-start: .35rem; color: var(--muted); }
 .receipt-line > strong { white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -1197,8 +1225,9 @@ html[dir='rtl'] .eyebrow { letter-spacing: 0; }
 @media (max-width: 900px), (max-height: 800px) {
   .site-frame { display: block; }
   .site-nav { margin-inline: auto; }
-  .site-nav__tools { width: 100%; margin-inline-start: 0; }
-  .site-nav__tools input { width: min(60vw, 18rem); }
+  .site-nav__tools { width: 100%; margin-inline-start: 0; justify-content: space-between; }
+  .site-nav__tools form { flex: 1 1 auto; max-width: 18rem; }
+  .site-nav__tools input { width: 100%; min-width: 0; }
   .site-footer { margin-inline: auto; }
   .poster:not(.poster--flexible) {
     width: 100%;
@@ -1221,9 +1250,24 @@ html[dir='rtl'] .eyebrow { letter-spacing: 0; }
   .poster:not(.poster--flexible) .brand__logo { max-height: 7rem; }
   .poster:not(.poster--flexible) .brand__tag { max-width: 55vw; }
   .poster:not(.poster--flexible) .brand__slogan span { max-width: 85vw; }
+  /* Classic 8-item poster mobile RTL fixes (overrides hardcoded LTR rules in style.css). */
   html[dir='rtl'] .poster:not(.poster--flexible) .brand { border-right: 0; }
-  html[dir='rtl'] .poster:not(.poster--flexible) .brand__desc { padding-right: 1rem; }
-  html[dir='rtl'] .poster:not(.poster--flexible) .hero-cup { inset: auto; }
+  html[dir='rtl'] .poster:not(.poster--flexible) .brand__name { line-height: 1.25; }
+  html[dir='rtl'] .poster:not(.poster--flexible) .brand__desc {
+    padding-left: 0;
+    padding-right: clamp(.7rem, 3vw, 1rem);
+    border-left: 0;
+    border-right: .15rem solid #726657;
+    line-height: 1.7;
+  }
+  html[dir='rtl'] .poster:not(.poster--flexible) .slogan-large { font-size: clamp(1.6rem, 7.2vw, 2.4rem); line-height: 1.3; }
+  html[dir='rtl'] .poster:not(.poster--flexible) .slogan-small { font-size: clamp(1.2rem, 5.4vw, 1.8rem); line-height: 1.4; }
+  html[dir='rtl'] .poster:not(.poster--flexible) .hero-cup { inset: auto; margin: -.35rem 0 0 -.35rem; transform: none; }
+  html[dir='rtl'] .poster:not(.poster--flexible) .cell > .item { text-align: right; }
+  html[dir='rtl'] .poster:not(.poster--flexible) .item p { padding-inline-end: 2.2rem; }
+  html[dir='rtl'] .poster:not(.poster--flexible) .item h2::after { margin-left: 0; margin-right: .3em; }
+  html[dir='rtl'] .poster:not(.poster--flexible) .item__action--fav { left: auto; right: .2rem; inset-inline-start: .2rem; }
+  html[dir='rtl'] .poster:not(.poster--flexible) .item__action--cart { right: auto; left: .2rem; inset-inline-end: .2rem; }
   .extra-blocks { margin-inline: auto; }
   .cms-product-grid { grid-auto-rows: auto; }
   .cms-product-grid .cell { padding-block: 1rem; }

@@ -69,3 +69,26 @@ export function modifierGroupSummary(group, selectedIds = [], strings = {}) {
     ruleLabel,
   };
 }
+
+const PERSIAN_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+
+/**
+ * Normalize Persian/Arabic keyboard variants (ي/ى -> ی, ك -> ک, آ/أ/إ -> ا,
+ * ة -> ه, Persian/Arabic digits -> Latin digits, ZWNJ/whitespace collapsed,
+ * diacritics stripped) so Persian menu search matches regardless of keyboard.
+ */
+export function normalizeSearchText(value) {
+  if (typeof value !== 'string') return '';
+  return value
+    .replace(/[\u064A\u0649]/g, '\u06CC')
+    .replace(/\u0643/g, '\u06A9')
+    .replace(/\u0629/g, '\u0647')
+    .replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627')
+    .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+    .replace(/[۰-۹]/g, (d) => String(PERSIAN_DIGITS.indexOf(d)))
+    .replace(/[٠-٩]/g, (d) => String(ARABIC_DIGITS.indexOf(d)))
+    .replace(/[\u200C\u200D\s]+/g, ' ')
+    .trim()
+    .toLowerCase();
+}

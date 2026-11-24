@@ -33,7 +33,7 @@ export async function renderBlock(block, ctx) {
     case 'faq':
       content = intro(b) + `<div class="cms-faq">${(b.items ?? []).map((item) => `<details><summary>${e(item.question)}</summary><p>${e(item.answer)}</p></details>`).join('')}</div>`; break;
     case 'contact':
-      content = intro(b) + `<address class="cms-contact">${b.address ? `<p>${e(b.address)}</p>` : ''}${(b.phones ?? []).map((phone) => `<a dir="ltr" href="tel:${e(String(phone).replace(/[^\d+]/g, ''))}">${e(toLocaleDigits(String(phone), ctx.locale))}</a>`).join('')}${b.email ? `<a href="mailto:${e(b.email)}">${e(b.email)}</a>` : ''}${b.hours ? `<p>${e(b.hours)}</p>` : ''}</address>`; break;
+      content = intro(b) + `<address class="cms-contact">${b.address ? `<p>${e(b.address)}</p>` : ''}${(b.phones ?? []).map((phone) => `<a dir="ltr" href="tel:${e(String(phone).replace(/[^\d+]/g, ''))}">${e(toLocaleDigits(String(phone), ctx.locale))}</a>`).join('')}${b.email ? `<a dir="ltr" href="mailto:${e(b.email)}">${e(b.email)}</a>` : ''}${b.hours ? `<p>${e(b.hours)}</p>` : ''}</address>`; break;
     case 'formBlock': content = await renderForm(b, ctx); break;
     case 'productGrid': {
       const products = await ctx.client.productsForBlock(b, ctx.site, ctx.locale, ctx.settings);
@@ -84,7 +84,8 @@ async function renderForm(block, ctx) {
       input = `<label><input id="${id}" type="checkbox" name="${name}" value="true"${required}${field.defaultValue ? ' checked' : ''}> ${label}</label>`;
     } else {
       const inputType = ['email', 'number', 'date', 'tel'].includes(type) ? type : 'text';
-      input = `<input id="${id}" type="${inputType}" name="${name}"${required}${placeholder}${value}>`;
+      const dirAttr = ['email', 'tel'].includes(inputType) ? ' dir="ltr"' : '';
+      input = `<input id="${id}" type="${inputType}" name="${name}"${dirAttr}${required}${placeholder}${value}>`;
     }
     return `<div class="cms-field">${['checkbox', 'radio'].includes(type) ? input : `<label for="${id}">${label}${required ? ' *' : ''}</label>${input}`}</div>`;
   }).join('');

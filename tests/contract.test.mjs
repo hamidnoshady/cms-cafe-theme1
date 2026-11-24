@@ -11,7 +11,7 @@ import { verifyRevalidation, verifyReceipt, receiptSignature, escapeHtml, jsonSc
 import { cmsOwnedApi } from '../src/proxy.js';
 import { productViewModel, availability } from '../src/products.js';
 import { activeModifierGroups, isTableToken, menuGroupsFor, menuSort, menuState, needsCart } from '../src/menu.js';
-import { localizeDefaultSetting, extractCategories, modifierGroupSummary } from '../src/theme-helpers.js';
+import { localizeDefaultSetting, extractCategories, modifierGroupSummary, normalizeSearchText } from '../src/theme-helpers.js';
 import { lexical } from '../src/lexical.js';
 import { createApp } from '../server.js';
 import { startMockCms, API_KEY, SITE_ID, REVALIDATE_SECRET, RECEIPT_SECRET, ORDER_ID, PRODUCT_ID, variable, cafeItem, cafeSoldOut, rejectedCafeOrder, allBlocks } from './fixtures.mjs';
@@ -429,4 +429,47 @@ test('SSR includes bundled shadcn UI assets and menu toolbar host', async (t) =>
   assert.equal((await fetch(`${base}/public/ui/theme-ui.css`)).status, 200);
   assert.equal((await fetch(`${base}/public/ui/theme-ui.js`)).status, 200);
 });
+
+test('Persian search normalization bridges Arabic/Persian keyboard variants, digits and ZWNJ', () => {
+  assert.equal(normalizeSearchText('چاي'), normalizeSearchText('چای'));
+  assert.equal(normalizeSearchText('كاپوچينو'), normalizeSearchText('کاپوچینو'));
+  assert.equal(normalizeSearchText('آیس آمریکانو'), normalizeSearchText('ایس امریکانو'));
+  assert.equal(normalizeSearchText('بیرون‌بر'), normalizeSearchText('بیرون بر'));
+  assert.equal(normalizeSearchText('قهوه‌خانه ۱۲۳'), normalizeSearchText('قهوه خانه 123'));
+  assert.equal(normalizeSearchText('قَهوِه'), normalizeSearchText('قهوه'));
+});
+
+test('Persian SSR enforces RTL directional isolation, localized initial digits and natural labels', async (t) => {
+  const { base, cms, client } = await running(t);
+  const html = await (await fetch(`${base}/`)).text();
+  // Quantity stepper keeps [−] [qty] [+] visual order while showing Persian digits on SSR.
+  assert.ok(html.includes('id="detail-qty" dir="ltr"'));
+  assert.ok(html.includes('id="detail-quantity" aria-live="polite">۱</output>'));
+  // Article grid read-more arrow mirrors for RTL.
+  assert.ok(html.includes('ادامه مطلب ↖</a>'));
+  assert.ok(!html.includes('ادامه مطلب ↗</a>'));
+  // Email links and tel/email inputs isolate LTR values in RTL layout.
+  assert.ok(html.includes('dir="ltr" href="mailto:shop@example.com"'));
+  assert.ok(html.includes('type="email" name="email" dir="ltr"'));
+  // Nav search uses an inline SVG icon instead of a font-dependent Unicode glyph.
+  assert.ok(html.includes('class="site-nav__search-icon"'));
+  // Brand spans are separated by real whitespace for flexible inline layout and screen readers.
+  assert.ok(!html.includes('</span><span class="brand__name-second">'));
+
+  // Café mode localizes initial cart badge digit on SSR.
+  cms.state.cafe = true;
+  client.invalidate();
+  const cafeHtml = await (await fetch(`${base}/?tableToken=table-7-abc123`)).text();
+  assert.ok(cafeHtml.includes('id="cart-count">۰</span>'));
+
+  // Receipt isolates reference/phone in LTR and uses finalized order-note wording.
+  const signature = receiptSignature(RECEIPT_SECRET, SITE_ID, ORDER_ID);
+  const receiptHtml = await (await fetch(`${base}/checkout/${ORDER_ID}?r=${signature}`)).text();
+  const start = receiptHtml.indexOf('<article class="receipt"');
+  const receipt = receiptHtml.slice(start, receiptHtml.indexOf('</article>', start));
+  assert.ok(receipt.includes('<dd dir="ltr" class="receipt-ltr">'));
+  assert.ok(receipt.includes('یادداشت سفارش'));
+  assert.ok(!receipt.includes('یادداشت (اختیاری)'));
+});
+
 

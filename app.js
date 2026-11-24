@@ -171,11 +171,12 @@
       const choice = (line.modifiers || []).map((modifier) => {
         const group = (products[line.index]?.modifiers || []).find((candidate) => candidate.sourceId === modifier.groupId);
         const labels = modifier.optionIds.map((id) => group?.options.find((option) => option.sourceId === id)?.label).filter(Boolean);
-        return labels.join('، ');
+        return labels.join(locale === 'fa' ? '، ' : ', ');
       }).filter(Boolean).join(' · ');
       if (choice) { const span = document.createElement('span'); span.className = 'cart-line__choice'; span.textContent = choice; body.append(span); }
       const stepper = document.createElement('div');
       stepper.className = 'cart-line__qty';
+      stepper.dir = 'ltr';
       const fewer = document.createElement('button');
       fewer.type = 'button'; fewer.dataset.cartStep = '-1'; fewer.textContent = '−'; fewer.setAttribute('aria-label', `${t.fewer}: ${line.title}`);
       const value = document.createElement('output');
@@ -369,7 +370,8 @@
     $('.detail__dots').replaceChildren(...Array.from({ length: 5 }, (_, i) => {
       const dot = document.createElement('span'); dot.className = i < p.intensity ? 'dot is-on' : 'dot'; dot.setAttribute('aria-hidden', 'true'); return dot;
     }));
-    $('.detail__dots').setAttribute('aria-label', `${t.intensity}: ${p.intensity || 0} / 5`);
+    const fmt = new Intl.NumberFormat(locale === 'fa' ? 'fa-IR' : locale);
+    $('.detail__dots').setAttribute('aria-label', `${t.intensity}: ${fmt.format(p.intensity || 0)} / ${fmt.format(5)}`);
     $('.detail__variation').hidden = p.type !== 'variable';
     const select = $('#detail-variation');
     select.replaceChildren(...p.variations.map((v) => { const option = document.createElement('option'); option.value = v.key; option.textContent = `${v.label} — ${v.price}${v.available === 0 ? ` (${t.soldOut})` : ''}`; return option; }));

@@ -44,6 +44,7 @@ export function shell(ctx, content, { title, description = '', bodyClass = '', n
     ${og && !noindex ? `<meta property="og:image" content="${e(new URL(og, origin).href)}"><meta name="twitter:card" content="summary_large_image">` : ''}
     ${favicon ? `<link rel="icon" href="${e(favicon)}">` : ''}
     <link rel="preload" href="/public/fonts/vazirmatn-${locale === 'fa' ? 'arabic' : 'latin'}-400-normal.woff" as="font" type="font/woff" crossorigin>
+    <link rel="preload" href="/public/fonts/vazirmatn-${locale === 'fa' ? 'arabic' : 'latin'}-700-normal.woff" as="font" type="font/woff" crossorigin>
     <link rel="stylesheet" href="${uiAsset('theme-ui.css')}"><link rel="stylesheet" href="${asset('style.css')}"><link rel="stylesheet" href="${asset('cms.css')}">
     <style>${themeCss(site.theme)}</style><script src="${asset('money.js')}"></script><script src="${uiAsset('theme-ui.js')}" defer></script><script src="${asset('app.js')}" defer></script>
     ${jsonLd ? `<script type="application/ld+json">${jsonScript(jsonLd)}</script>` : ''}`;
@@ -68,7 +69,7 @@ export async function renderHome(ctx, page) {
   const brandName = site.branding?.displayName || site.name;
   const words = brandName.trim().split(/\s+/);
   const logo = site.branding?.homeLogo || site.branding?.primaryLogo || site.branding?.logo;
-  const brandMarkup = logo ? imageHtml(logo, site, brandName, { className: 'brand__logo', eager: true }) : `<span>${e(words[0] || '')}</span>${words.length > 1 ? `<span class="brand__name-second">${e(words.slice(1).join(' '))}</span>` : ''}`;
+  const brandMarkup = logo ? imageHtml(logo, site, brandName, { className: 'brand__logo', eager: true }) : `<span>${e(words[0] || '')}</span>${words.length > 1 ? ` <span class="brand__name-second">${e(words.slice(1).join(' '))}</span>` : ''}`;
   const tagline = site.branding?.tagline || localizeDefaultSetting('tagline', settings.tagline, locale);
   const heroText = page?.hero?.richText ? plainText(page.hero.richText) : '';
   const description = localizeDefaultSetting('brandDescription', settings.brandDescription, locale) || heroText;
@@ -131,7 +132,7 @@ export function detailHtml(ctx) {
       <a class="detail__permalink" href="#">${e(t.viewProduct)}</a><p class="detail__stock" role="status"></p><p class="sr-only" role="status" aria-live="polite"></p>
     </div><div class="detail__footer">
       <p class="detail__modifier-error" role="alert" hidden></p>
-      <div class="detail__purchase"><div class="detail__qty" id="detail-qty" hidden><button type="button" data-step="-1" aria-label="${e(t.fewer)}">−</button><output id="detail-quantity" aria-live="polite">۱</output><button type="button" data-step="1" aria-label="${e(t.more)}">+</button></div><p class="detail__price"><span class="detail__price-amount"></span><s class="detail__compare" hidden></s><span class="detail__price-note">${e(t.perCup)}</span></p><button class="detail__cta" type="button"><span>${e(t.order)}</span>${arrow}</button></div>
+      <div class="detail__purchase"><div class="detail__qty" id="detail-qty" dir="ltr" hidden><button type="button" data-step="-1" aria-label="${e(t.fewer)}">−</button><output id="detail-quantity" aria-live="polite">${e(formatNumber(1, ctx.locale))}</output><button type="button" data-step="1" aria-label="${e(t.more)}">+</button></div><p class="detail__price"><span class="detail__price-amount"></span><s class="detail__compare" hidden></s><span class="detail__price-note">${e(t.perCup)}</span></p><button class="detail__cta" type="button"><span>${e(t.order)}</span>${arrow}</button></div>
     </div></div><div class="detail__art"><span class="detail__ghost" aria-hidden="true"></span><span class="detail__glow" aria-hidden="true"></span><div class="detail__stage" aria-hidden="true"></div><div class="detail__identity"><p class="detail__eyebrow"><span class="detail__num"></span><span class="detail__cat"></span></p><h2 class="detail__name" id="detail-name"></h2></div></div></div>
   </div></dialog>`;
 }
@@ -139,7 +140,7 @@ export function detailHtml(ctx) {
 export function cartBarHtml(ctx) {
   if (!ctx.cafe) return '';
   const t = ctx.t;
-  return `<div class="cart-bar" id="cart-bar" hidden><button class="cart-bar__button" type="button" data-action="open-cart"><span class="cart-bar__count" id="cart-count">۰</span><span class="cart-bar__label">${e(t.viewOrder)}</span><strong class="cart-bar__total" id="cart-total"></strong></button></div>`;
+  return `<div class="cart-bar" id="cart-bar" hidden><button class="cart-bar__button" type="button" data-action="open-cart"><span class="cart-bar__count" id="cart-count">${e(formatNumber(0, ctx.locale))}</span><span class="cart-bar__label">${e(t.viewOrder)}</span><strong class="cart-bar__total" id="cart-total"></strong></button></div>`;
 }
 
 export function checkoutHtml(ctx, products) {
@@ -160,7 +161,7 @@ export function checkoutHtml(ctx, products) {
       <div class="checkout-fields"><label class="checkout-field">${e(t.name)}<input name="name" type="text" required maxlength="200" autocomplete="name"></label><label class="checkout-field">${e(t.phone)}<input name="phone" type="tel" required inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09121234567"></label><label class="checkout-field" id="checkout-quantity-field">${e(t.quantity)}<input name="quantity" type="number" required min="1" max="99" value="1" inputmode="numeric"></label>${field('email', t.email, 'email', 'autocomplete="email" dir="ltr" maxlength="254"')}</div>
       <fieldset class="checkout-methods checkout-service" id="checkout-service" hidden><legend>${e(t.serviceMode)}</legend><div id="service-modes"></div></fieldset>
       <fieldset class="checkout-methods checkout-service" id="checkout-payment-choice" hidden><legend>${e(t.payment)}</legend><div id="payment-choices"></div></fieldset>
-      <label class="checkout-field" id="checkout-coupon-field">${e(t.coupon)}<input name="couponCode" type="text" maxlength="80" autocomplete="off"></label>
+      <label class="checkout-field" id="checkout-coupon-field">${e(t.coupon)}<input name="couponCode" type="text" dir="auto" maxlength="80" autocomplete="off"></label>
       <label class="checkout-field">${e(t.note)}<textarea name="note" rows="2" maxlength="500"></textarea></label>
       <fieldset class="checkout-methods" hidden><legend>${e(t.payment)}</legend><div id="payment-methods"></div></fieldset>
       <p class="checkout__secure">${e(t.secure)}</p><p id="checkout-error" role="alert" hidden></p>
@@ -169,7 +170,8 @@ export function checkoutHtml(ctx, products) {
 }
 
 export function articleGrid(docs, ctx) {
-  return `<div class="cms-grid article-grid" data-columns="3">${docs.map((doc) => `<article class="cms-card article-card">${doc.heroImage ? `<a href="${e(documentPath(ctx.site, ctx.locale, doc, '/posts'))}">${imageHtml(doc.heroImage, ctx.site, doc.title)}</a>` : ''}<div class="article-card__body">${doc.publishedAt ? `<time datetime="${e(doc.publishedAt)}">${e(formatDate(doc.publishedAt, ctx.locale))}</time>` : ''}<h2><a href="${e(documentPath(ctx.site, ctx.locale, doc, '/posts'))}">${e(doc.title)}</a></h2><p>${e(doc.meta?.description || '')}</p><a class="text-link" href="${e(documentPath(ctx.site, ctx.locale, doc, '/posts'))}">${e(ctx.t.readMore)} ↗</a></div></article>`).join('')}</div>`;
+  const arrowGlyph = ctx.locale === 'fa' ? '↖' : '↗';
+  return `<div class="cms-grid article-grid" data-columns="3">${docs.map((doc) => `<article class="cms-card article-card">${doc.heroImage ? `<a href="${e(documentPath(ctx.site, ctx.locale, doc, '/posts'))}">${imageHtml(doc.heroImage, ctx.site, doc.title)}</a>` : ''}<div class="article-card__body">${doc.publishedAt ? `<time datetime="${e(doc.publishedAt)}">${e(formatDate(doc.publishedAt, ctx.locale))}</time>` : ''}<h2><a href="${e(documentPath(ctx.site, ctx.locale, doc, '/posts'))}">${e(doc.title)}</a></h2><p>${e(doc.meta?.description || '')}</p><a class="text-link" href="${e(documentPath(ctx.site, ctx.locale, doc, '/posts'))}">${e(ctx.t.readMore)} ${arrowGlyph}</a></div></article>`).join('')}</div>`;
 }
 
 export async function renderContent(ctx, { heading, body = '', docs = [], page, extra = '', pagination, noindex = false }) {
@@ -183,7 +185,10 @@ export async function renderBlocksPage(ctx, page) {
 }
 
 export function renderError(ctx, status, message) {
-  const content = `<main class="status-page"><p class="eyebrow">${e(ctx.site?.branding?.displayName || 'Coffee Poster')}</p><h1>${e(message)}</h1><a class="cms-button" href="/">${e(ctx.t?.backHome || 'Back to home')}</a></main>`;
+  const isFa = !ctx.site || ctx.locale === 'fa';
+  const brandFallback = isFa ? 'پوستر کافه' : 'Coffee Poster';
+  const backLabel = ctx.t?.backHome || (isFa ? 'بازگشت به صفحه اصلی' : 'Back to home');
+  const content = `<main class="status-page"><p class="eyebrow">${e(ctx.site?.branding?.displayName || brandFallback)}</p><h1>${e(message)}</h1><a class="cms-button" href="/">${e(backLabel)}</a></main>`;
   if (!ctx.site) return template.replace('{{HEAD}}', `<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${e(message)}</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/cms.css">`).replace('{{LANG}}', 'fa').replace('{{DIR}}', 'rtl').replace('{{BODY_CLASS}}', '').replace('{{CONTENT}}', content);
   return shell(ctx, content, { title: message, noindex: true });
 }

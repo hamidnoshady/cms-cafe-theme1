@@ -9,7 +9,7 @@ export function strings(locale) {
     removeFavorite: ['حذف از علاقه‌مندی‌ها', 'Remove from favourites'],
     name: ['نام و نام خانوادگی', 'Full name'], phone: ['شماره موبایل', 'Mobile number'],
     email: ['ایمیل (اختیاری)', 'Email (optional)'], quantity: ['تعداد', 'Quantity'],
-    note: ['یادداشت (اختیاری)', 'Note (optional)'], coupon: ['کد تخفیف (اختیاری)', 'Coupon code (optional)'],
+    note: ['یادداشت (اختیاری)', 'Note (optional)'], orderNote: ['یادداشت سفارش', 'Order note'], coupon: ['کد تخفیف (اختیاری)', 'Coupon code (optional)'],
     variation: ['انتخاب گزینه', 'Choose an option'], payment: ['روش پرداخت', 'Payment method'],
     submit: ['تأیید و ادامه پرداخت', 'Confirm and continue to payment'], sending: ['در حال ثبت سفارش…', 'Placing your order…'],
     checkoutTitle: ['سفارش شما', 'Your order'], secure: ['قیمت نهایی و موجودی را فروشگاه هنگام ثبت سفارش بررسی می‌کند.', 'The store verifies the final price and availability when you place your order.'],

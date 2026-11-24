@@ -42,11 +42,11 @@ jobs:
       ESHOBE_THEME_PACKAGE_ID: ${{ secrets.ESHOBE_THEME_PACKAGE_ID }}
       ESHOBE_THEME_ARTIFACT_SECRET: ${{ secrets.ESHOBE_THEME_ARTIFACT_SECRET }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.ref || github.ref }}
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -65,18 +65,59 @@ jobs:
           echo "name=$image" >> "$GITHUB_OUTPUT"
           echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ steps.image.outputs.name }}
-          tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix=sha-,format=short
-            type=sha,prefix=,format=long
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            type=raw,value=edge,enable=${{ github.event_name == 'workflow_dispatch' }}
+        name: Compute image tags and OCI labels
+        # Compute tags and OCI labels locally from git + workflow context so publishing
+        # never fails on transient api.github.com DNS errors inside docker/metadata-action.
+        env:
+          IMAGE: ${{ steps.image.outputs.name }}
+          COMMIT: ${{ steps.image.outputs.commit }}
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const image = process.env.IMAGE;
+            const commit = process.env.COMMIT;
+            const shortSha = commit.slice(0, 7);
+            const ref = process.env.GITHUB_REF || "";
+            const eventName = process.env.GITHUB_EVENT_NAME || "";
+            const repo = process.env.GITHUB_REPOSITORY || "";
+            const serverUrl = process.env.GITHUB_SERVER_URL || "https://github.com";
+            const repoName = repo.split("/")[1] || repo;
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+
+            const tagSet = new Set();
+            const semverMatch = /^refs\/tags\/v?(\d+)\.(\d+)\.(\d+)(-[0-9A-Za-z.-]+)?$/.exec(ref);
+            let versionLabel = `sha-${shortSha}`;
+            if (semverMatch) {
+              const [, major, minor, patch, pre = ""] = semverMatch;
+              const fullVer = `${major}.${minor}.${patch}${pre}`;
+              tagSet.add(`${image}:${fullVer}`);
+              if (!pre) tagSet.add(`${image}:${major}.${minor}`);
+              versionLabel = fullVer;
+            }
+            tagSet.add(`${image}:sha-${shortSha}`);
+            tagSet.add(`${image}:${commit}`);
+            if (ref === "refs/heads/main") tagSet.add(`${image}:latest`);
+            if (eventName === "workflow_dispatch") tagSet.add(`${image}:edge`);
+
+            const tags = [...tagSet];
+            const labels = [
+              `org.opencontainers.image.title=${repoName}`,
+              `org.opencontainers.image.description=${pkg.description || ""}`,
+              `org.opencontainers.image.source=${serverUrl}/${repo}`,
+              `org.opencontainers.image.url=${serverUrl}/${repo}`,
+              `org.opencontainers.image.revision=${commit}`,
+              `org.opencontainers.image.created=${new Date().toISOString()}`,
+              `org.opencontainers.image.version=${versionLabel}`,
+            ];
+
+            const out = process.env.GITHUB_OUTPUT;
+            fs.appendFileSync(out, `tags<<EOF_TAGS\n${tags.join("\n")}\nEOF_TAGS\n`);
+            fs.appendFileSync(out, `labels<<EOF_LABELS\n${labels.join("\n")}\nEOF_LABELS\n`);
+            console.log("Tags:\n" + tags.join("\n"));
+            console.log("Labels:\n" + labels.join("\n"));
+          '
       - id: build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64

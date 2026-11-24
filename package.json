@@ -19,9 +19,7 @@
     "test:browser": "node tests/browser.mjs && node tests/checkout-browser.mjs"
   },
   "dependencies": {
-    "@eshobe/site-runtime": "file:vendor/eshobe-site-runtime",
-    "cn": "^0.5.2",
-    "radix-ui": "^1.8.1"
+    "@eshobe/site-runtime": "file:vendor/eshobe-site-runtime"
   },
   "devDependencies": {
     "@radix-ui/react-checkbox": "^1.4.1",
@@ -40,6 +38,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.78.0",
     "playwright-core": "1.51.1",
+    "radix-ui": "^1.8.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tailwind-merge": "^3.7.1",

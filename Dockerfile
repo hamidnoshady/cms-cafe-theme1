@@ -4,11 +4,11 @@ COPY package.json package-lock.json ./
 COPY vendor/eshobe-site-runtime/package.json vendor/eshobe-site-runtime/package.json
 RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 
-FROM node:22-alpine AS builder
+FROM node:22-slim AS builder
 WORKDIR /app
 COPY package.json package-lock.json tsconfig.json vite.config.ts components.json ./
 COPY vendor ./vendor
-RUN npm ci --ignore-scripts --no-audit --no-fund
+RUN npm ci --no-audit --no-fund
 COPY server.js index.html app.js money.js style.css cms.css eshobe.theme.json ./
 COPY scripts ./scripts
 COPY src ./src

@@ -27,16 +27,16 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Production build
+        run: npm run build
       - name: Validate Eshobe manifest
         run: npm run validate:manifest
       - name: Lint
         run: npm run lint
       - name: Typecheck
-        run: npm run typecheck
+        run: npm run typecheck && npx tsc --noEmit
       - name: Tests
         run: npm test
-      - name: Production build
-        run: npm run build
 
   audits:
     name: Browser audits (a11y + interaction)
@@ -48,6 +48,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Build UI assets
+        run: npm run build
       # The audits run against the theme server, exactly as on a host:
       # `npm run test:browser` launches real Chromium (@sparticuz/chromium) against
       # `server.js` with a mock CMS and writes screenshots to `test-results/`.

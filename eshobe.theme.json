@@ -18,7 +18,7 @@
   "deployment": {
     "strategy": "registry_image",
     "registryProvider": "ghcr",
-    "registryImageRepository": "ghcr.io/alifarjoodi/cms-resturant-2-theme",
+    "registryImageRepository": "ghcr.io/hamidnoshady/cms-cafe-theme1",
     "registryVisibility": "public"
   },
   "build": {

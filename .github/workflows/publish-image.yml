@@ -56,7 +56,7 @@ jobs:
         # Keep CI and the manifest identical. Coolify deploys this repository by digest,
         # not by any mutable tag.
         run: |
-          image='ghcr.io/alifarjoodi/cms-resturant-2-theme'
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
           manifest_image="$(node -e "console.log(JSON.parse(require('node:fs').readFileSync('eshobe.theme.json', 'utf8')).deployment.registryImageRepository)")"
           if [ "$manifest_image" != "$image" ]; then
             echo "::error::Manifest image $manifest_image does not match CI image $image"
